@@ -2,7 +2,13 @@
 
 A research journal of my work on the [Vesuvius Challenge](https://scrollprize.org) "First Letters" prize: reading carbonized papyrus scrolls from Herculaneum using X-ray CT scans and machine learning. I worked on a laptop with a 4 GB GPU, in November 2026.
 
-**Short version.** I built a full pipeline that runs on that laptop. It goes from the raw CT scan to flattened sheets of papyrus, then to ink predictions, and every step is checked against a scroll that has already been read. I used a self-supervised 3D vision model to pick which unread scroll to attack. Then I unrolled almost 500 cm² of papyrus from it and ran two ink models over the surface. **I have not found letters yet.** What I do have is a method I trust: every "no ink" verdict comes with a positive control showing that the same chain *does* reveal letters where letters exist.
+## TL;DR
+
+- **Goal:** the Vesuvius Challenge "First Letters" prize: find at least 10 legible letters in an unread Herculaneum scroll, on a laptop with a 4 GB GPU.
+- **Approach:** literature review → ink-model baselines → self-supervised scroll ranking (DINO 3D ViT, bootstrap CIs) → whole-band virtual unwrapping (761 pieces, 471 cm²) → positive controls at every step.
+- **Key finding so far:** no letters yet on PHerc. 1545, but this is a *controlled* negative. The same pipeline recovers known Greek letters on PHerc. 0139, and returns noise when the depth order is reversed (figure below).
+- **Principle:** model outputs are hypotheses. Strong agreement between ink models (r = 0.6–0.85) traced back to shared structural artefacts (cracks, seams), not ink.
+- **Next:** PHerc. 0846A, in the top 3 of two DINO variants. A first run stopped when the disk filled up; a rerun at 9 µm is planned.
 
 <p align="center">
   <img src="figures/control_w035_reader_v3.png" width="90%"><br>
@@ -29,7 +35,7 @@ A research journal of my work on the [Vesuvius Challenge](https://scrollprize.or
 | 3. [Choosing a scroll](docs/03-choosing-a-scroll-with-dino.md) | Which of the 19 eligible scrolls looks most like the scrolls the best ink model was trained on? | Embedded 24 random CT cubes from each of 26 scrolls with a self-supervised 3D ViT (DINO), then scored similarity with bootstrap confidence intervals | PHerc. 1545 came in the top two in all 4 variants, while PHerc. 0800 sat in the bottom half. I switched targets |
 | 4. [Whole-scroll unwrapping](docs/04-whole-scroll-unwrapping.md) | Can I get much more surface than the 9 cm² published? | Ran HerculeX, an open-source unwrapping pipeline, on a band of PHerc. 1545 overnight on the laptop GPU | 761 flattened pieces, 471 cm², with papyrus fibres clearly visible. Two ink models saw no text |
 | 5. [Controls](docs/05-controls.md) | Is "no text" a real result, or a bug in how I fed the data to the model? | Rebuilt HerculeX's exact input format on the control scroll and re-ran the model | The control letters reappear unchanged. The negative result is real |
-| 6. [Lessons and next steps](docs/06-lessons-and-next-steps.md) | What next? | Moved to PHerc. 0846A, ranked third by DINO, where another participant has reported a cluster of letters (not yet verified) | Run in progress |
+| 6. [Lessons and next steps](docs/06-lessons-and-next-steps.md) | What next? | Moved to PHerc. 0846A, in the top 3 of two DINO variants, where another participant has reported a cluster of letters (not yet verified) | First run stopped (disk full, see step 6); rerun at 9 µm planned |
 
 <p align="center">
   <img src="figures/herculex_surface_fibres_zoom.png" width="60%"><br>
